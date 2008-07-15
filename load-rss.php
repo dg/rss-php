@@ -1,9 +1,13 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-require_once 'rss.class.php';
+if (!ini_get('date.timezone')) {
+	date_default_timezone_set('Europe/Prague');
+}
 
-$rss = new RssFeed('http://phpfashion.com/feed/rss');
+require_once 'feed.class.php';
+
+$rss = Feed::loadRss('http://phpfashion.com/feed/rss');
 
 ?>
 
@@ -13,7 +17,7 @@ $rss = new RssFeed('http://phpfashion.com/feed/rss');
 
 <?php foreach ($rss->item as $item): ?>
 	<h2><a href="<?php echo htmlSpecialChars($item->link)?>"><?php echo htmlSpecialChars($item->title)?></a>
-	<small><?php echo date("j.n.Y H:s", (int) $item->timestamp)?></small></h2>
+	<small><?php echo date("j.n.Y H:m", (int) $item->timestamp)?></small></h2>
 
 	<?php if (isset($item->{'content:encoded'})):?>
 		<div><?php echo $item->{'content:encoded'} ?></div>
