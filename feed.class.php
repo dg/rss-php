@@ -89,7 +89,7 @@ class Feed
 	 * @param  string  tag name
 	 * @return SimpleXMLElement
 	 */
-	protected function __get($name)
+	public function __get($name)
 	{
 		return $this->xml->{$name};
 	}
@@ -102,7 +102,7 @@ class Feed
 	 * @param  mixed   property value
 	 * @return void
 	 */
-	protected function __set($name, $value)
+	public function __set($name, $value)
 	{
 		throw new Exception("Cannot assign to a read-only property '$name'.");
 	}

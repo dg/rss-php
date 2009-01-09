@@ -17,7 +17,7 @@ $rss = Feed::loadRss('http://phpfashion.com/feed/rss');
 
 <?php foreach ($rss->item as $item): ?>
 	<h2><a href="<?php echo htmlSpecialChars($item->link)?>"><?php echo htmlSpecialChars($item->title)?></a>
-	<small><?php echo date("j.n.Y H:m", (int) $item->timestamp)?></small></h2>
+	<small><?php echo date("j.n.Y H:i", (int) $item->timestamp)?></small></h2>
 
 	<?php if (isset($item->{'content:encoded'})):?>
 		<div><?php echo $item->{'content:encoded'} ?></div>

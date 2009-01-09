@@ -16,7 +16,7 @@ $atom = Feed::loadAtom('http://phpfashion.com/feed/atom');
 
 <?php foreach ($atom->entry as $entry): ?>
 	<h2><a href="<?php echo htmlSpecialChars($entry->link['href'])?>"><?php echo htmlSpecialChars($entry->title)?></a>
-	<small><?php echo date("j.n.Y H:m", (int) $entry->timestamp)?></small></h2>
+	<small><?php echo date("j.n.Y H:i", (int) $entry->timestamp)?></small></h2>
 
 	<?php if ($entry->content['type'] == 'html'):?>
 		<div><?php echo $entry->content?></div>
