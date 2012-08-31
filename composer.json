@@ -1,0 +1,16 @@
+{
+	"name": "dg/rss-php",
+	"description": "RSS & Atom Feeds for PHP is a very small and easy-to-use library for consuming an RSS and Atom feed.",
+	"keywords": ["rss", "atom", "feed"],
+	"homepage": "https://github.com/dg/rss-php",
+	"license": ["BSD-3"],
+	"authors": [
+		{
+			"name": "David Grudl",
+			"homepage": "http://davidgrudl.com"
+		}
+	],
+	"autoload": {
+		"classmap": ["feed.class.php"]
+	}
+}

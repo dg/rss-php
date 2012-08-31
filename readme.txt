@@ -7,7 +7,7 @@ Introduction
 RSS & Atom Feeds for PHP is a very small and easy-to-use library for consuming an RSS and Atom feed
 
 
-Project at GoogleCode: http://rss-php.googlecode.com
+Project at GitHub: https://github.com/dg/rss-php
 My PHP blog: http://phpfashion.com
 
 
