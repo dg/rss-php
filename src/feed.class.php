@@ -150,15 +150,7 @@ class Feed
 			}
 		}
 
-		if ($user === NULL && $pass === NULL && ini_get('allow_url_fopen')) {
-			$result = file_get_contents($url);
-			$ok = is_string($result);
-
-		} else {
-			if (!extension_loaded('curl')) {
-				throw new Exception('PHP extension CURL is not loaded.');
-			}
-
+		if (extension_loaded('curl')) {
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_URL, $url);
 			if ($user !== NULL || $pass !== NULL) {
@@ -172,6 +164,13 @@ class Feed
 			}
 			$result = curl_exec($curl);
 			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
+
+		} elseif ($user === NULL && $pass === NULL) {
+			$result = file_get_contents($url);
+			$ok = is_string($result);
+
+		} else {
+			throw new FeedException('PHP extension CURL is not loaded.');
 		}
 
 		if (!$ok) {
