@@ -5,10 +5,10 @@ if (!ini_get('date.timezone')) {
 	date_default_timezone_set('Europe/Prague');
 }
 
-require_once 'feed.class.php';
+require_once 'src/feed.class.php';
 
 
-$atom = Feed::loadAtom('http://phpfashion.com/feed/atom');
+$atom = Feed::loadAtom('http://php.vrana.cz/atom.php');
 
 ?>
 

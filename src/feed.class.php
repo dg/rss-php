@@ -56,7 +56,6 @@ class Feed
 	}
 
 
-
 	/**
 	 * Loads Atom channel.
 	 * @param  string  Atom feed URL
@@ -83,7 +82,6 @@ class Feed
 	}
 
 
-
 	/**
 	 * Returns property value. Do not call directly.
 	 * @param  string  tag name
@@ -93,7 +91,6 @@ class Feed
 	{
 		return $this->xml->{$name};
 	}
-
 
 
 	/**
@@ -106,7 +103,6 @@ class Feed
 	{
 		throw new Exception("Cannot assign to a read-only property '$name'.");
 	}
-
 
 
 	/**
@@ -135,7 +131,6 @@ class Feed
 
 		return $arr;
 	}
-
 
 
 	/**
@@ -173,7 +168,7 @@ class Feed
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE); // no echo, just return result
 			if (!ini_get('open_basedir')) {
-				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
+				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE); // sometime is useful :)
 			}
 			$result = curl_exec($curl);
 			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
@@ -195,7 +190,6 @@ class Feed
 
 		return $result;
 	}
-
 
 
 	/**

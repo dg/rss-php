@@ -5,7 +5,7 @@ if (!ini_get('date.timezone')) {
 	date_default_timezone_set('Europe/Prague');
 }
 
-require_once 'feed.class.php';
+require_once 'src/feed.class.php';
 
 $rss = Feed::loadRss('http://phpfashion.com/feed/rss');
 

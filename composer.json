@@ -11,6 +11,6 @@
 		}
 	],
 	"autoload": {
-		"classmap": ["feed.class.php"]
+		"classmap": ["src/"]
 	}
 }
