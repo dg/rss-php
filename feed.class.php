@@ -172,7 +172,9 @@ class Feed
 			curl_setopt($curl, CURLOPT_HEADER, FALSE);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE); // no echo, just return result
-			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
+			if (!ini_get('open_basedir')) {
+				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
+			}
 			$result = curl_exec($curl);
 			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
 		}
