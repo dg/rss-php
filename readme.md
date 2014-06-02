@@ -1,6 +1,8 @@
 RSS & Atom Feeds for PHP
 ========================
 
+[![Downloads this Month](https://img.shields.io/packagist/dm/dg/rss-php.svg)](https://packagist.org/packages/dg/rss-php)
+
 RSS & Atom Feeds for PHP is a very small and easy-to-use library for consuming an RSS and Atom feeds.
 
 It requires PHP 5.0 or newer with CURL extension or enabled allow_url_fopen
