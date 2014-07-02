@@ -166,7 +166,12 @@ class Feed
 			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
 
 		} elseif ($user === NULL && $pass === NULL) {
-			$result = file_get_contents($url);
+			try{
+				$result = file_get_contents($url);
+			}catch(Exception $e){
+				$result = $url;
+			}
+			
 			$ok = is_string($result);
 
 		} else {
