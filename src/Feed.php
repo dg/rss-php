@@ -65,7 +65,9 @@ class Feed
 	public static function loadAtom($url, $user = NULL, $pass = NULL)
 	{
 		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
-		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
+		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)
+			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), TRUE)
+		) {
 			throw new FeedException('Invalid channel.');
 		}
 
