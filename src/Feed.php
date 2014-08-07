@@ -68,7 +68,9 @@ class Feed
 	{
 		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
 		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
-			throw new FeedException('Invalid channel.');
+			if (!in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), TRUE)) {
+				throw new FeedException('Invalid channel.');
+			}
 		}
 
 		// generate 'timestamp' tag
