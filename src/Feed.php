@@ -162,11 +162,11 @@ class Feed
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE); // sometime is useful :)
 			}
-			$result = curl_exec($curl);
+			$result = trim(curl_exec($curl));
 			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
 
 		} elseif ($user === NULL && $pass === NULL) {
-			$result = file_get_contents($url);
+			$result = trim(file_get_contents($url));
 			$ok = is_string($result);
 
 		} else {
