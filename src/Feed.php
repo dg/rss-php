@@ -30,12 +30,18 @@ class Feed
 	 * @throws FeedException
 	 */
 	public static function loadRss($url, $user = NULL, $pass = NULL)
-	{
-		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
-		if (!$xml->channel) {
-			throw new FeedException('Invalid channel.');
-		}
-
+	{		
+                if(!$url instanceof SimpleXMLElement) {            
+                        $xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
+                        
+                        if (!$xml->channel) {
+                                throw new FeedException('Invalid channel.');
+                        }               
+                }                
+                else {
+                      $xml = $url;
+                }
+                
 		self::adjustNamespaces($xml->channel);
 
 		foreach ($xml->channel->item as $item) {
@@ -54,6 +60,31 @@ class Feed
 		$feed->xml = $xml->channel;
 		return $feed;
 	}
+      
+
+        /**
+	 * Loads RSS or Atom channel.
+	 * @param  string  RSS feed URL
+	 * @param  string  optional user name
+	 * @param  string  optional password
+	 * @return Feed
+	 * @throws FeedException
+	 */
+	public static function loadFeed($url, $user = NULL, $pass = NULL)
+	{
+		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);               
+                
+                if ($xml->channel) {                    
+                        return Feed::loadRss($url, $user, $pass);
+		}                
+                else if (in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
+                        return  Feed::loadAtom($url, $user, $pass);
+		}                
+                else {                    
+                 	throw new FeedException('Invalid channel.');
+                }		
+	}
+        
 
 
 	/**
@@ -66,11 +97,17 @@ class Feed
 	 */
 	public static function loadAtom($url, $user = NULL, $pass = NULL)
 	{
-		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
-		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
-			throw new FeedException('Invalid channel.');
-		}
-
+                if(!$url instanceof SimpleXMLElement) {
+                	$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
+                
+                        if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
+                                throw new FeedException('Invalid channel.');
+                        }
+                }
+                else {                    
+                    $xml = $url;                
+                }
+                
 		// generate 'timestamp' tag
 		foreach ($xml->entry as $entry) {
 			$entry->timestamp = strtotime($entry->updated);
