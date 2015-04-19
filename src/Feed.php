@@ -1,5 +1,4 @@
 <?php
-
 /**
  * RSS for PHP - small and easy-to-use library for consuming an RSS Feed
  *
@@ -13,14 +12,10 @@ class Feed
 {
 	/** @var int */
 	public static $cacheExpire = 86400; // 1 day
-
 	/** @var string */
 	public static $cacheDir;
-
 	/** @var SimpleXMLElement */
 	protected $xml;
-
-
 	/**
 	 * Loads RSS channel.
 	 * @param  string  RSS feed URL
@@ -30,18 +25,22 @@ class Feed
 	 * @throws FeedException
 	 */
 	public static function loadRss($url, $user = NULL, $pass = NULL)
-	{
-		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
-		if (!$xml->channel) {
-			throw new FeedException('Invalid channel.');
-		}
-
+	{		
+                if(!$url instanceof SimpleXMLElement) {            
+                        $xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
+                        
+                        if (!$xml->channel) {
+                                throw new FeedException('Invalid channel.');
+                        }               
+                }                
+                else {
+                      $xml = $url;
+                }
+                
 		self::adjustNamespaces($xml->channel);
-
 		foreach ($xml->channel->item as $item) {
 			// converts namespaces to dotted tags
 			self::adjustNamespaces($item);
-
 			// generate 'timestamp' tag
 			if (isset($item->{'dc:date'})) {
 				$item->timestamp = strtotime($item->{'dc:date'});
@@ -49,13 +48,34 @@ class Feed
 				$item->timestamp = strtotime($item->pubDate);
 			}
 		}
-
 		$feed = new self;
 		$feed->xml = $xml->channel;
 		return $feed;
 	}
-
-
+      
+        /**
+	 * Loads RSS or Atom channel.
+	 * @param  string  RSS feed URL
+	 * @param  string  optional user name
+	 * @param  string  optional password
+	 * @return Feed
+	 * @throws FeedException
+	 */
+	public static function loadFeed($url, $user = NULL, $pass = NULL)
+	{
+		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);               
+                
+                if ($xml->channel) {                    
+                        return Feed::loadRss($url, $user, $pass);
+		}                
+                else if (in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
+                        return  Feed::loadAtom($url, $user, $pass);
+		}                
+                else {                    
+                 	throw new FeedException('Invalid channel.');
+                }		
+	}
+        
 	/**
 	 * Loads Atom channel.
 	 * @param  string  Atom feed URL
@@ -66,22 +86,25 @@ class Feed
 	 */
 	public static function loadAtom($url, $user = NULL, $pass = NULL)
 	{
-		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
-		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
-			throw new FeedException('Invalid channel.');
-		}
-
+                if(!$url instanceof SimpleXMLElement) {
+                	$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
+                
+                        if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)) {
+                                throw new FeedException('Invalid channel.');
+                        }
+                }
+                else {                    
+                    $xml = $url;                
+                }
+                
 		// generate 'timestamp' tag
 		foreach ($xml->entry as $entry) {
 			$entry->timestamp = strtotime($entry->updated);
 		}
-
 		$feed = new self;
 		$feed->xml = $xml;
 		return $feed;
 	}
-
-
 	/**
 	 * Returns property value. Do not call directly.
 	 * @param  string  tag name
@@ -91,8 +114,6 @@ class Feed
 	{
 		return $this->xml->{$name};
 	}
-
-
 	/**
 	 * Sets value of a property. Do not call directly.
 	 * @param  string  property name
@@ -103,8 +124,6 @@ class Feed
 	{
 		throw new Exception("Cannot assign to a read-only property '$name'.");
 	}
-
-
 	/**
 	 * Converts a SimpleXMLElement into an array.
 	 * @param  SimpleXMLElement
@@ -115,11 +134,9 @@ class Feed
 		if ($xml === NULL) {
 			$xml = $this->xml;
 		}
-
 		if (!$xml->children()) {
 			return (string) $xml;
 		}
-
 		$arr = array();
 		foreach ($xml->children() as $tag => $child) {
 			if (count($xml->$tag) === 1) {
@@ -128,11 +145,8 @@ class Feed
 				$arr[$tag][] = $this->toArray($child);
 			}
 		}
-
 		return $arr;
 	}
-
-
 	/**
 	 * Process HTTP request.
 	 * @param  string  URL
@@ -149,7 +163,6 @@ class Feed
 				return file_get_contents($cacheFile);
 			}
 		}
-
 		if (extension_loaded('curl')) {
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_URL, $url);
@@ -164,15 +177,12 @@ class Feed
 			}
 			$result = trim(curl_exec($curl));
 			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
-
 		} elseif ($user === NULL && $pass === NULL) {
 			$result = trim(file_get_contents($url));
 			$ok = is_string($result);
-
 		} else {
 			throw new FeedException('PHP extension CURL is not loaded.');
 		}
-
 		if (!$ok) {
 			if (isset($cacheFile)) {
 				$result = @file_get_contents($cacheFile);
@@ -182,15 +192,11 @@ class Feed
 			}
 			throw new FeedException('Cannot load channel.');
 		}
-
 		if (isset($cacheFile)) {
 			file_put_contents($cacheFile, $result);
 		}
-
 		return $result;
 	}
-
-
 	/**
 	 * Generates better accessible namespaced tags.
 	 * @param  SimpleXMLElement
@@ -205,11 +211,7 @@ class Feed
 			}
 		}
 	}
-
 }
-
-
-
 /**
  * An exception generated by Feed.
  */
