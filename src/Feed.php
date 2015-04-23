@@ -9,8 +9,7 @@
  * @link       http://phpfashion.com/
  * @version    1.1
  */
-class Feed
-{
+class Feed {
 	/** @var int */
 	public static $cacheExpire = 86400; // 1 day
 
@@ -29,8 +28,7 @@ class Feed
 	 * @return Feed
 	 * @throws FeedException
 	 */
-	public static function loadRss($url, $user = NULL, $pass = NULL)
-	{
+	public static function loadRss($url, $user = NULL, $pass = NULL){
 		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
 		if (!$xml->channel) {
 			throw new FeedException('Invalid channel.');
@@ -98,9 +96,9 @@ class Feed
 	 * @param  string  property name
 	 * @param  mixed   property value
 	 * @return void
+     * @throws \Exception
 	 */
-	public function __set($name, $value)
-	{
+	public function __set($name, $value){
 		throw new Exception("Cannot assign to a read-only property '$name'.");
 	}
 
@@ -110,8 +108,7 @@ class Feed
 	 * @param  SimpleXMLElement
 	 * @return array
 	 */
-	public function toArray(SimpleXMLElement $xml = NULL)
-	{
+	public function toArray(SimpleXMLElement $xml = NULL){
 		if ($xml === NULL) {
 			$xml = $this->xml;
 		}
@@ -141,8 +138,7 @@ class Feed
 	 * @return string
 	 * @throws FeedException
 	 */
-	private static function httpRequest($url, $user, $pass)
-	{
+	private static function httpRequest($url, $user, $pass){
 		if (self::$cacheDir) {
 			$cacheFile = self::$cacheDir . '/feed.' . md5($url) . '.xml';
 			if (@filemtime($cacheFile) + self::$cacheExpire > time()) {
@@ -158,6 +154,7 @@ class Feed
 			}
 			curl_setopt($curl, CURLOPT_HEADER, FALSE);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // FIX SSL issue
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE); // no echo, just return result
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE); // sometime is useful :)
@@ -196,8 +193,7 @@ class Feed
 	 * @param  SimpleXMLElement
 	 * @return void
 	 */
-	private static function adjustNamespaces($el)
-	{
+	private static function adjustNamespaces($el){
 		foreach ($el->getNamespaces(TRUE) as $prefix => $ns) {
 			$children = $el->children($ns);
 			foreach ($children as $tag => $content) {
