@@ -3,10 +3,8 @@
 /**
  * RSS for PHP - small and easy-to-use library for consuming an RSS Feed
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2008 David Grudl
  * @license    New BSD License
- * @link       http://phpfashion.com/
  * @version    1.1
  */
 class Feed
