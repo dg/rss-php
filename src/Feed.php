@@ -20,6 +20,25 @@ class Feed
 
 
 	/**
+	 * Loads RSS or Atom feed.
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 * @return Feed
+	 * @throws FeedException
+	 */
+	public static function load($url, $user = NULL, $pass = NULL)
+	{
+		$xml = self::loadXml($url, $user, $pass);
+		if ($xml->channel) {
+			return self::fromRss($xml);
+		} else {
+			return self::fromAtom($xml);
+		}
+	}
+
+
+	/**
 	 * Loads RSS feed.
 	 * @param  string  RSS feed URL
 	 * @param  string  optional user name
@@ -29,28 +48,7 @@ class Feed
 	 */
 	public static function loadRss($url, $user = NULL, $pass = NULL)
 	{
-		$xml = self::loadXml($url, $user, $pass);
-		if (!$xml->channel) {
-			throw new FeedException('Invalid feed.');
-		}
-
-		self::adjustNamespaces($xml->channel);
-
-		foreach ($xml->channel->item as $item) {
-			// converts namespaces to dotted tags
-			self::adjustNamespaces($item);
-
-			// generate 'timestamp' tag
-			if (isset($item->{'dc:date'})) {
-				$item->timestamp = strtotime($item->{'dc:date'});
-			} elseif (isset($item->pubDate)) {
-				$item->timestamp = strtotime($item->pubDate);
-			}
-		}
-
-		$feed = new self;
-		$feed->xml = $xml->channel;
-		return $feed;
+		return self::fromRss(self::loadXml($url, $user, $pass));
 	}
 
 
@@ -64,7 +62,37 @@ class Feed
 	 */
 	public static function loadAtom($url, $user = NULL, $pass = NULL)
 	{
-		$xml = self::loadXml($url, $user, $pass);
+		return self::fromAtom(self::loadXml($url, $user, $pass));
+	}
+
+
+	private static function fromRss(SimpleXMLElement $xml)
+	{
+		if (!$xml->channel) {
+			throw new FeedException('Invalid feed.');
+		}
+
+		self::adjustNamespaces($xml);
+
+		foreach ($xml->channel->item as $item) {
+			// converts namespaces to dotted tags
+			self::adjustNamespaces($item);
+
+			// generate 'timestamp' tag
+			if (isset($item->{'dc:date'})) {
+				$item->timestamp = strtotime($item->{'dc:date'});
+			} elseif (isset($item->pubDate)) {
+				$item->timestamp = strtotime($item->pubDate);
+			}
+		}
+		$feed = new self;
+		$feed->xml = $xml->channel;
+		return $feed;
+	}
+
+
+	private static function fromAtom(SimpleXMLElement $xml)
+	{
 		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)
 			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), TRUE)
 		) {
@@ -75,7 +103,6 @@ class Feed
 		foreach ($xml->entry as $entry) {
 			$entry->timestamp = strtotime($entry->updated);
 		}
-
 		$feed = new self;
 		$feed->xml = $xml;
 		return $feed;
