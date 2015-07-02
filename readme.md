@@ -47,5 +47,12 @@ Download Atom feed from URL:
 $atom = Feed::loadAtom($url);
 ```
 
+You can also enable caching:
+
+```php
+Feed::$cacheDir = __DIR__ . '/tmp';
+Feed::$cacheExpire = '5 hours';
+```
+
 -----
 (c) David Grudl, 2008 (http://davidgrudl.com)

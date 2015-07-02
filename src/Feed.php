@@ -10,7 +10,7 @@
 class Feed
 {
 	/** @var int */
-	public static $cacheExpire = 86400; // 1 day
+	public static $cacheExpire = '1 day';
 
 	/** @var string */
 	public static $cacheDir;
@@ -143,7 +143,8 @@ class Feed
 	{
 		if (self::$cacheDir) {
 			$cacheFile = self::$cacheDir . '/feed.' . md5($url) . '.xml';
-			if (@filemtime($cacheFile) + self::$cacheExpire > time()) {
+			$e = self::$cacheExpire;
+			if (time() - @filemtime($cacheFile) <= (is_string($e) ? strtotime($e) - time() : $e)) {
 				return file_get_contents($cacheFile);
 			}
 		}
