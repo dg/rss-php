@@ -20,7 +20,7 @@ class Feed
 
 
 	/**
-	 * Loads RSS channel.
+	 * Loads RSS feed.
 	 * @param  string  RSS feed URL
 	 * @param  string  optional user name
 	 * @param  string  optional password
@@ -29,9 +29,9 @@ class Feed
 	 */
 	public static function loadRss($url, $user = NULL, $pass = NULL)
 	{
-		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
+		$xml = self::loadXml($url, $user, $pass);
 		if (!$xml->channel) {
-			throw new FeedException('Invalid channel.');
+			throw new FeedException('Invalid feed.');
 		}
 
 		self::adjustNamespaces($xml->channel);
@@ -55,7 +55,7 @@ class Feed
 
 
 	/**
-	 * Loads Atom channel.
+	 * Loads Atom feed.
 	 * @param  string  Atom feed URL
 	 * @param  string  optional user name
 	 * @param  string  optional password
@@ -64,11 +64,11 @@ class Feed
 	 */
 	public static function loadAtom($url, $user = NULL, $pass = NULL)
 	{
-		$xml = new SimpleXMLElement(self::httpRequest($url, $user, $pass), LIBXML_NOWARNING | LIBXML_NOERROR);
+		$xml = self::loadXml($url, $user, $pass);
 		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), TRUE)
 			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), TRUE)
 		) {
-			throw new FeedException('Invalid channel.');
+			throw new FeedException('Invalid feed.');
 		}
 
 		// generate 'timestamp' tag
@@ -134,23 +134,47 @@ class Feed
 
 
 	/**
+	 * Load XML from cache or HTTP.
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 * @return SimpleXMLElement
+	 * @throws FeedException
+	 */
+	private static function loadXml($url, $user, $pass)
+	{
+		$e = self::$cacheExpire;
+		$cacheFile = self::$cacheDir . '/feed.' . md5(serialize(func_get_args())) . '.xml';
+
+		if (self::$cacheDir
+			&& (time() - @filemtime($cacheFile) <= (is_string($e) ? strtotime($e) - time() : $e))
+			&& $data = @file_get_contents($cacheFile)
+		) {
+			// ok
+		} elseif ($data = trim(self::httpRequest($url, $user, $pass))) {
+			if (self::$cacheDir) {
+				file_put_contents($cacheFile, $data);
+			}
+		} elseif (self::$cacheDir && $data = @file_get_contents($cacheFile)) {
+			// ok
+		} else {
+			throw new FeedException('Cannot load feed.');
+		}
+
+		return new SimpleXMLElement($data, LIBXML_NOWARNING | LIBXML_NOERROR);
+	}
+
+
+	/**
 	 * Process HTTP request.
-	 * @param  string  URL
-	 * @param  string  user name
-	 * @param  string  password
-	 * @return string
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 * @return string|FALSE
 	 * @throws FeedException
 	 */
 	private static function httpRequest($url, $user, $pass)
 	{
-		if (self::$cacheDir) {
-			$cacheFile = self::$cacheDir . '/feed.' . md5($url) . '.xml';
-			$e = self::$cacheExpire;
-			if (time() - @filemtime($cacheFile) <= (is_string($e) ? strtotime($e) - time() : $e)) {
-				return file_get_contents($cacheFile);
-			}
-		}
-
 		if (extension_loaded('curl')) {
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_URL, $url);
@@ -164,32 +188,17 @@ class Feed
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE); // sometime is useful :)
 			}
-			$result = trim(curl_exec($curl));
-			$ok = curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200;
+			$result = curl_exec($curl);
+			return curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200
+				? $result
+				: FALSE;
 
 		} elseif ($user === NULL && $pass === NULL) {
-			$result = trim(file_get_contents($url));
-			$ok = is_string($result);
+			return file_get_contents($url);
 
 		} else {
 			throw new FeedException('PHP extension CURL is not loaded.');
 		}
-
-		if (!$ok) {
-			if (isset($cacheFile)) {
-				$result = @file_get_contents($cacheFile);
-				if (is_string($result)) {
-					return $result;
-				}
-			}
-			throw new FeedException('Cannot load channel.');
-		}
-
-		if (isset($cacheFile)) {
-			file_put_contents($cacheFile, $result);
-		}
-
-		return $result;
 	}
 
 
