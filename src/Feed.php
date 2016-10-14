@@ -7,6 +7,11 @@
  * @license    New BSD License
  * @version    1.2
  */
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\ResponseInterface;
+
 class Feed
 {
 	/** @var int */
@@ -202,30 +207,17 @@ class Feed
 	 */
 	private static function httpRequest($url, $user, $pass)
 	{
-		if (extension_loaded('curl')) {
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $url);
-			if ($user !== NULL || $pass !== NULL) {
-				curl_setopt($curl, CURLOPT_USERPWD, "$user:$pass");
-			}
-			curl_setopt($curl, CURLOPT_HEADER, FALSE);
-			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
-			curl_setopt($curl, CURLOPT_ENCODING , '');
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE); // no echo, just return result
-			if (!ini_get('open_basedir')) {
-				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE); // sometime is useful :)
-			}
-			$result = curl_exec($curl);
-			return curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200
-				? $result
-				: FALSE;
-
-		} elseif ($user === NULL && $pass === NULL) {
-			return file_get_contents($url);
-
-		} else {
-			throw new FeedException('PHP extension CURL is not loaded.');
+		$client = new Client();
+		$requestOptions = [];
+		$requestOption['verify'] = './cacert.pem';
+		if($user !== NULL && $pass !== NULL) {
+			$requestOptions['auth'] = [$user, $pass];
 		}
+		$response = $client->request('GET', $url, [
+			'verify' => __DIR__.'/cacert.pem',
+		]);
+
+		return $response->getBody()->getContents();
 	}
 
 
