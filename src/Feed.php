@@ -210,6 +210,7 @@ class Feed
 		$client = new Client();
 		$requestOptions = [];
 		$requestOption['verify'] = './cacert.pem';
+		$requestOption['auth'] = [$user, $pass];
 		if($user !== NULL && $pass !== NULL) {
 			$requestOptions['auth'] = [$user, $pass];
 		}

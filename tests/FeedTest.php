@@ -14,25 +14,25 @@ final class FeedTest extends TestCase
     {
         $rss = Feed::load($this->rssUrl);
 
-        $this->assertInternalType('object', $rss);
+        $this->assertInstanceOf('\Feed', $rss);
 
         $rss = Feed::load($this->atomUrl);
 
-        $this->assertInternalType('object', $rss);
+        $this->assertInstanceOf('\Feed', $rss);
     }
 
     public function testLoadRss()
     {
         $rss = Feed::loadRss($this->rssUrl);
 
-        $this->assertInternalType('object', $rss);
+        $this->assertInstanceOf('\Feed', $rss);
     }
 
     public function testLoadAtom()
     {
         $rss = Feed::loadAtom($this->atomUrl);
 
-        $this->assertInternalType('object', $rss);
+        $this->assertInstanceOf('\Feed', $rss);
     }
 
     public function testInvalidRss()
@@ -61,7 +61,7 @@ final class FeedTest extends TestCase
     {
         $rss = Feed::loadRss($this->dcDateUrl);
 
-        $this->assertInternalType('object', $rss);
+        $this->assertInstanceOf('\Feed', $rss);
     }
 
     public function testGetXml()
@@ -69,7 +69,7 @@ final class FeedTest extends TestCase
         $rss = Feed::loadRss($this->dcDateUrl);
         $objVal = $rss->__get('dc:date');
         
-        $this->assertInternalType('object', $objVal);
+        $this->assertInstanceOf('\SimpleXMLElement', $objVal);
     }
 
     public function testSet()
@@ -96,6 +96,9 @@ final class FeedTest extends TestCase
         $this->assertInternalType('array', $feedArr);
     }
 
-    //public function 
-
+    /*public function testAuth()
+    {
+        //test the basic auth and digest auth when the RSS url needs to HTTP auth.
+    }
+    */
 }
