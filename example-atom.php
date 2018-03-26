@@ -8,7 +8,7 @@ if (!ini_get('date.timezone')) {
 require_once 'src/Feed.php';
 
 
-$atom = Feed::loadAtom('http://php.vrana.cz/atom.php');
+$atom = Feed::loadAtom('https://php.vrana.cz/atom.php');
 
 ?>
 

@@ -55,4 +55,4 @@ Feed::$cacheExpire = '5 hours';
 ```
 
 -----
-(c) David Grudl, 2008 (http://davidgrudl.com)
+(c) David Grudl, 2008 (https://davidgrudl.com)

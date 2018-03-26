@@ -7,7 +7,7 @@ if (!ini_get('date.timezone')) {
 
 require_once 'src/Feed.php';
 
-$rss = Feed::loadRss('http://phpfashion.com/feed/rss');
+$rss = Feed::loadRss('https://phpfashion.com/feed/rss');
 
 ?>
 
