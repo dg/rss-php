@@ -11,7 +11,8 @@
 		}
 	],
 	"require": {
-		"php": ">=5.2.2"
+		"php": ">=5.2.2",
+		"ext-simplexml": "*"
 	},
 	"autoload": {
 		"classmap": ["src/"]
