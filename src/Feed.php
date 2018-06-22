@@ -210,7 +210,7 @@ class Feed
 			}
 			curl_setopt($curl, CURLOPT_HEADER, false);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
-			curl_setopt($curl, CURLOPT_ENCODING , '');
+			curl_setopt($curl, CURLOPT_ENCODING, '');
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // no echo, just return result
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
@@ -243,7 +243,6 @@ class Feed
 			}
 		}
 	}
-
 }
 
 
