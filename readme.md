@@ -54,5 +54,4 @@ Feed::$cacheDir = __DIR__ . '/tmp';
 Feed::$cacheExpire = '5 hours';
 ```
 
------
-(c) David Grudl, 2008 (http://davidgrudl.com)
+If you like it, **[please make a donation now](https://nette.org/make-donation?to=rss-php)**. Thank you!
