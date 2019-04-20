@@ -208,15 +208,11 @@ class Feed
 	private static function httpRequest($url, $user, $pass)
 	{
 		$client = new Client();
-		$requestOptions = [];
-		$requestOption['verify'] = './cacert.pem';
-		$requestOption['auth'] = [$user, $pass];
+		$requestOptions['verify'] =  __DIR__ . '/cacert.pem';
 		if($user !== NULL && $pass !== NULL) {
 			$requestOptions['auth'] = [$user, $pass];
 		}
-		$response = $client->request('GET', $url, [
-			'verify' => __DIR__.'/cacert.pem',
-		]);
+		$response = $client->request('GET', $url, $requestOptions);
 
 		return $response->getBody()->getContents();
 	}
