@@ -208,6 +208,8 @@ class Feed
 			if ($user !== null || $pass !== null) {
 				curl_setopt($curl, CURLOPT_USERPWD, "$user:$pass");
 			}
+			$user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36";
+			curl_setopt($curl, CURLOPT_USERAGENT, $user_agent); // some feeds require a user agent
 			curl_setopt($curl, CURLOPT_HEADER, false);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 			curl_setopt($curl, CURLOPT_ENCODING, '');
