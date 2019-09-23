@@ -220,11 +220,20 @@ class Feed
 				? $result
 				: false;
 
-		} elseif ($user === null && $pass === null) {
-			return file_get_contents($url);
-
 		} else {
-			throw new FeedException('PHP extension CURL is not loaded.');
+            // handle basic authentication
+            $context = null;
+            if ($user !== null && $pass !== null) {
+                $options = array(
+                    'http'=>array(
+                        'method' => 'GET',
+                        'header' => 'Authorization: Basic ' . base64_encode($user.":".$pass) . "\r\n"
+                    )
+                );
+                $context = stream_context_create($options);
+		    }
+
+			return file_get_contents($url, false, $context);
 		}
 	}
 
