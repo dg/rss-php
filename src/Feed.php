@@ -147,7 +147,7 @@ class Feed
 			return (string) $xml;
 		}
 
-		$arr = array();
+		$arr = [];
 		foreach ($xml->children() as $tag => $child) {
 			if (count($xml->$tag) === 1) {
 				$arr[$tag] = $this->toArray($child);
@@ -223,12 +223,12 @@ class Feed
 		} else {
 			$context = null;
 			if ($user !== null && $pass !== null) {
-				$options = array(
-					'http'=> array(
+				$options = [
+					'http' => [
 						'method' => 'GET',
 						'header' => 'Authorization: Basic ' . base64_encode($user . ':' . $pass) . "\r\n",
-					)
-				);
+					],
+				];
 				$context = stream_context_create($options);
 			}
 
