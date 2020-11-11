@@ -24,7 +24,7 @@ class Feed
 
 	/**
 	 * Loads RSS or Atom feed.
-	 * @param  stringta
+	 * @param  string
 	 * @param  string
 	 * @param  string
 	 * @return Feed
