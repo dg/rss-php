@@ -16,7 +16,7 @@ class Feed
 	public static $cacheDir;
 	
 	/** @var string */
-	public static $userAgent;
+	public static $userAgent = 'FeedFetcher-Google';
 
 	/** @var SimpleXMLElement */
 	protected $xml;
