@@ -54,4 +54,10 @@ Feed::$cacheDir = __DIR__ . '/tmp';
 Feed::$cacheExpire = '5 hours';
 ```
 
+You can setup a User-Agent if needed:
+
+```php
+Feed::$userAgent = "FeedFetcher-Google; (+http://www.google.com/feedfetcher.html)";
+```
+
 If you like it, **[please make a donation now](https://nette.org/make-donation?to=rss-php)**. Thank you!
