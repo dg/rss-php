@@ -104,6 +104,9 @@ class Feed
 
 		// generate 'timestamp' tag
 		foreach ($xml->entry as $entry) {
+			$link = (string)$entry->link['href'];
+			unset($entry->link);
+			$entry->link = $link;
 			$entry->timestamp = strtotime($entry->updated);
 		}
 		$feed = new self;
