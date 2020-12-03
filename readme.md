@@ -30,11 +30,11 @@ the information from the channel is easy:
 ```php
 echo 'Title: ', $rss->title;
 echo 'Description: ', $rss->description;
-echo 'Link: ', $rss->link;
+echo 'Link: ', $rss->url;
 
 foreach ($rss->item as $item) {
 	echo 'Title: ', $item->title;
-	echo 'Link: ', $item->link;
+	echo 'Link: ', $item->url;
 	echo 'Timestamp: ', $item->timestamp;
 	echo 'Description ', $item->description;
 	echo 'HTML encoded content: ', $item->{'content:encoded'};

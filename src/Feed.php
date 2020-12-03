@@ -81,7 +81,8 @@ class Feed
 			// converts namespaces to dotted tags
 			self::adjustNamespaces($item);
 
-			// generate 'timestamp' tag
+			// generate 'url' & 'timestamp' tags
+			$item->url = (string) $item->link;
 			if (isset($item->{'dc:date'})) {
 				$item->timestamp = strtotime($item->{'dc:date'});
 			} elseif (isset($item->pubDate)) {
@@ -102,8 +103,9 @@ class Feed
 			throw new FeedException('Invalid feed.');
 		}
 
-		// generate 'timestamp' tag
+		// generate 'url' & 'timestamp' tags
 		foreach ($xml->entry as $entry) {
+			$entry->url = (string) $entry->link['href'];
 			$entry->timestamp = strtotime($entry->updated);
 		}
 		$feed = new self;

@@ -15,7 +15,7 @@ $atom = Feed::loadAtom('https://php.vrana.cz/atom.php');
 <h1><?php echo htmlspecialchars($atom->title) ?></h1>
 
 <?php foreach ($atom->entry as $entry): ?>
-	<h2><a href="<?php echo htmlspecialchars($entry->link['href']) ?>"><?php echo htmlspecialchars($entry->title) ?></a>
+	<h2><a href="<?php echo htmlspecialchars($entry->url) ?>"><?php echo htmlspecialchars($entry->title) ?></a>
 	<small><?php echo date('j.n.Y H:i', (int) $entry->timestamp) ?></small></h2>
 
 	<?php if ($entry->content['type'] == 'html'): ?>
