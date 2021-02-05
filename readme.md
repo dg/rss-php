@@ -15,6 +15,16 @@ our [GitHub repository](https://github.com/dg/rss-php/releases) or install it vi
 php composer.phar require dg/rss-php
 ```
 
+[Support Me](https://github.com/sponsors/dg)
+--------------------------------------------
+
+Do you like RSS? Are you looking forward to the new features?
+
+[![Buy me a coffee](https://files.nette.org/icons/donation-3.svg)](https://github.com/sponsors/dg)
+
+Thank you!
+
+
 Usage
 -----
 
