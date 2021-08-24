@@ -18,6 +18,12 @@ class Feed
 	/** @var string */
 	public static $userAgent = 'FeedFetcher-Google';
 
+	/** @var array */
+	public static $supportedJsonfeedVersions = [
+		'https://jsonfeed.org/version/1',
+		'https://jsonfeed.org/version/1.1'
+	];
+
 	/** @var SimpleXMLElement */
 	protected $xml;
 
@@ -69,6 +75,20 @@ class Feed
 	}
 
 
+	/**
+	 * Loads JSON feed.
+	 * @param  string  JSON feed URL
+	 * @param  string  optional user name
+	 * @param  string  optional password
+	 * @return Feed
+	 * @throws FeedException
+	 */
+	public static function loadJsonfeed($url, $user = null, $pass = null)
+	{
+		return self::fromJson(self::loadJson($url, $user, $pass));
+	}
+
+
 	private static function fromRss(SimpleXMLElement $xml)
 	{
 		if (!$xml->channel) {
@@ -110,6 +130,32 @@ class Feed
 		}
 		$feed = new self;
 		$feed->xml = $xml;
+		return $feed;
+	}
+
+
+	private static function fromJson(object $json)
+	{
+		if (!in_array($json->version, self::$supportedJsonfeedVersions, true)) {
+			throw new FeedException('Invalid feed.');
+		}
+
+		// generate 'url' & 'timestamp' tags
+		foreach ($json->items as $item) {
+			$item->timestamp = strtotime($item->date_published);
+
+			if (empty($item->content_text)) {
+				$item->summary = (string) strip_tags($item->content_html);
+			}
+			if (empty($item->content_html)) {
+				$item->summary = (string) strip_tags($item->content_text);
+			}
+			if (empty($item->summary)) {
+				$item->summary = (string) $item->content_text;
+			}
+		}
+		$feed = new self;
+		$feed->xml = $json;
 		return $feed;
 	}
 
@@ -194,6 +240,43 @@ class Feed
 		}
 
 		return new SimpleXMLElement($data, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+	}
+
+
+	/**
+	 * Load JSON from cache or HTTP.
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 * @return object
+	 * @throws FeedException
+	 */
+	private static function loadJson($url, $user, $pass)
+	{
+		$e = self::$cacheExpire;
+		$cacheFile = self::$cacheDir . '/feed.' . md5(serialize(func_get_args())) . '.xml';
+
+		if (self::$cacheDir
+			&& (time() - @filemtime($cacheFile) <= (is_string($e) ? strtotime($e) - time() : $e))
+			&& $data = @file_get_contents($cacheFile)
+		) {
+			// ok
+		} elseif ($data = trim(self::httpRequest($url, $user, $pass))) {
+			if (self::$cacheDir) {
+				file_put_contents($cacheFile, $data);
+			}
+		} elseif (self::$cacheDir && $data = @file_get_contents($cacheFile)) {
+			// ok
+		} else {
+			throw new FeedException('Cannot load feed.');
+		}
+
+		$json = json_decode($data);
+		if(!$json){
+			throw new FeedException('Cannot parse feed.');
+		}
+
+		return $json;
 	}
 
 
