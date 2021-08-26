@@ -88,6 +88,10 @@ class Feed
 			} elseif (isset($item->pubDate)) {
 				$item->timestamp = strtotime($item->pubDate);
 			}
+			if(isset($item->enclosure)){
+				$item->enclosure = $item->enclosure['url'];
+				$item->enclosureType = $item->enclosure['type'];
+			}
 		}
 		$feed = new self;
 		$feed->xml = $xml->channel;

@@ -48,6 +48,8 @@ foreach ($rss->item as $item) {
 	echo 'Timestamp: ', $item->timestamp;
 	echo 'Description ', $item->description;
 	echo 'HTML encoded content: ', $item->{'content:encoded'};
+	echo 'Enclosure: ', $item->enclosure;
+	echo 'Enclosure Type: ', $item->enclosureType;
 }
 ```
 
