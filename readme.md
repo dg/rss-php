@@ -12,7 +12,7 @@ and is licensed under the New BSD License. You can obtain the latest version fro
 our [GitHub repository](https://github.com/dg/rss-php/releases) or install it via Composer:
 
 ```
-php composer.phar require dg/rss-php
+composer require dg/rss-php
 ```
 
 [Support Me](https://github.com/sponsors/dg)
