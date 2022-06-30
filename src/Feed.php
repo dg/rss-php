@@ -252,8 +252,12 @@ class Feed
 	{
 		foreach ($el->getNamespaces(true) as $prefix => $ns) {
 			$children = $el->children($ns);
+			$childrenCount = count($children);
 			foreach ($children as $tag => $content) {
 				$el->{$prefix . ':' . $tag} = $content;
+				if (--$childrenCount === 0) {
+					break;
+				}
 			}
 		}
 	}
