@@ -5,7 +5,6 @@
  *
  * @copyright  Copyright (c) 2008 David Grudl
  * @license    New BSD License
- * @version    1.5
  */
 class Feed
 {
