@@ -251,6 +251,9 @@ class Feed
 	private static function adjustNamespaces($el)
 	{
 		foreach ($el->getNamespaces(true) as $prefix => $ns) {
+			if ($prefix === '') {
+				continue;
+			}
 			$children = $el->children($ns);
 			foreach ($children as $tag => $content) {
 				$el->{$prefix . ':' . $tag} = $content;
