@@ -57,6 +57,12 @@ Download Atom feed from URL:
 $atom = Feed::loadAtom($url);
 ```
 
+Download JSON feed from URL:
+
+```php
+$json = Feed::loadJsonfeed($url);
+```
+
 You can also enable caching:
 
 ```php
