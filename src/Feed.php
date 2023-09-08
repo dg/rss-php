@@ -193,7 +193,14 @@ class Feed
 			throw new FeedException('Cannot load feed.');
 		}
 
-		return new SimpleXMLElement($data, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+		$doc = new DOMDocument();
+		$doc->loadXML($data, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+
+		if ($doc->documentElement !== NULL) {
+			return new SimpleXMLElement($doc->saveXML(), LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+		} else {
+			return new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title></title><link></link><description></description></channel></rss>', LIBXML_NOWARNING | LIBXML_NOERROR);
+		}
 	}
 
 
