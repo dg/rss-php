@@ -20,6 +20,12 @@ class Feed
 
 	/** @var SimpleXMLElement */
 	protected $xml;
+	
+	/** @var string */
+	public static $cookie;
+	
+	/** @var string */
+	public static $proxyHostPort;
 
 
 	/**
@@ -212,6 +218,12 @@ class Feed
 			curl_setopt($curl, CURLOPT_URL, $url);
 			if ($user !== null || $pass !== null) {
 				curl_setopt($curl, CURLOPT_USERPWD, "$user:$pass");
+			}
+			if (self::$cookie) {
+			    curl_setopt($curl, CURLOPT_COOKIE, self::$cookie);
+			}
+			if (self::$proxyHostPort) {
+			    curl_setopt($curl, CURLOPT_PROXY, self::$proxyHostPort);
 			}
 			curl_setopt($curl, CURLOPT_USERAGENT, self::$userAgent); // some feeds require a user agent
 			curl_setopt($curl, CURLOPT_HEADER, false);
