@@ -5,7 +5,7 @@
  *
  * @copyright  Copyright (c) 2008 David Grudl
  * @license    New BSD License
- * @version    1.5
+ * @version    1.6
  */
 class Feed
 {
@@ -22,15 +22,15 @@ class Feed
 	protected $xml;
 
 
-	/**
-	 * Loads RSS or Atom feed.
-	 * @param  string
-	 * @param  string
-	 * @param  string
-	 * @return Feed
-	 * @throws FeedException
-	 */
-	public static function load($url, $user = null, $pass = null)
+    /**
+     * Loads RSS or Atom feed.
+     * @param string $url
+     * @param string|null $user
+     * @param string|null $pass
+     * @return Feed
+     * @throws FeedException
+     */
+	public static function load(string $url, ?string $user = null, ?string $pass = null): self
 	{
 		$xml = self::loadXml($url, $user, $pass);
 		if ($xml->channel) {
@@ -41,35 +41,35 @@ class Feed
 	}
 
 
-	/**
-	 * Loads RSS feed.
-	 * @param  string  RSS feed URL
-	 * @param  string  optional user name
-	 * @param  string  optional password
-	 * @return Feed
-	 * @throws FeedException
-	 */
-	public static function loadRss($url, $user = null, $pass = null)
+    /**
+     * Loads RSS feed.
+     * @param string $url RSS feed URL
+     * @param string|null $user
+     * @param string|null $pass
+     * @return Feed
+     * @throws FeedException
+     */
+	public static function loadRss(string $url, ?string $user = null, ?string $pass = null): self
 	{
 		return self::fromRss(self::loadXml($url, $user, $pass));
 	}
 
 
-	/**
-	 * Loads Atom feed.
-	 * @param  string  Atom feed URL
-	 * @param  string  optional user name
-	 * @param  string  optional password
-	 * @return Feed
-	 * @throws FeedException
-	 */
-	public static function loadAtom($url, $user = null, $pass = null)
+    /**
+     * Loads Atom feed.
+     * @param string $url Atom feed URL
+     * @param string|null $user optional username
+     * @param string|null $pass optional password
+     * @return Feed
+     * @throws FeedException
+     */
+	public static function loadAtom(string $url, ?string $user = null, ?string $pass = null): self
 	{
 		return self::fromAtom(self::loadXml($url, $user, $pass));
 	}
 
 
-	private static function fromRss(SimpleXMLElement $xml)
+	private static function fromRss(SimpleXMLElement $xml): self
 	{
 		if (!$xml->channel) {
 			throw new FeedException('Invalid feed.');
@@ -95,7 +95,7 @@ class Feed
 	}
 
 
-	private static function fromAtom(SimpleXMLElement $xml)
+	private static function fromAtom(SimpleXMLElement $xml): self
 	{
 		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), true)
 			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), true)
@@ -116,33 +116,34 @@ class Feed
 
 	/**
 	 * Returns property value. Do not call directly.
-	 * @param  string  tag name
+	 * @param  string $name tag name
 	 * @return SimpleXMLElement
 	 */
-	public function __get($name)
+	public function __get(string $name): SimpleXMLElement
 	{
 		return $this->xml->{$name};
 	}
 
 
-	/**
-	 * Sets value of a property. Do not call directly.
-	 * @param  string  property name
-	 * @param  mixed   property value
-	 * @return void
-	 */
-	public function __set($name, $value)
+    /**
+     * Sets value of a property. Do not call directly.
+     * @param string $name property name
+     * @param mixed $value property value
+     * @return void
+     * @throws Exception
+     */
+	public function __set(string $name, string $value): void
 	{
 		throw new Exception("Cannot assign to a read-only property '$name'.");
 	}
 
 
-	/**
-	 * Converts a SimpleXMLElement into an array.
-	 * @param  SimpleXMLElement
-	 * @return array
-	 */
-	public function toArray(SimpleXMLElement $xml = null)
+    /**
+     * Converts a SimpleXMLElement into an array.
+     * @param SimpleXMLElement|null $xml
+     * @return array|string
+     */
+	public function toArray(?SimpleXMLElement $xml = null)
 	{
 		if ($xml === null) {
 			$xml = $this->xml;
@@ -165,15 +166,15 @@ class Feed
 	}
 
 
-	/**
-	 * Load XML from cache or HTTP.
-	 * @param  string
-	 * @param  string
-	 * @param  string
-	 * @return SimpleXMLElement
-	 * @throws FeedException
-	 */
-	private static function loadXml($url, $user, $pass)
+    /**
+     * Load XML from cache or HTTP.
+     * @param string $url
+     * @param string|null $user
+     * @param string|null $pass
+     * @return SimpleXMLElement
+     * @throws FeedException
+     */
+	private static function loadXml(string $url, ?string $user, ?string $pass): SimpleXMLElement
 	{
 		$e = self::$cacheExpire;
 		$cacheFile = self::$cacheDir . '/feed.' . md5(serialize(func_get_args())) . '.xml';
@@ -197,15 +198,14 @@ class Feed
 	}
 
 
-	/**
-	 * Process HTTP request.
-	 * @param  string
-	 * @param  string
-	 * @param  string
-	 * @return string|false
-	 * @throws FeedException
-	 */
-	private static function httpRequest($url, $user, $pass)
+    /**
+     * Process HTTP request.
+     * @param string $url
+     * @param string|null $user
+     * @param string|null $pass
+     * @return string|false
+     */
+	private static function httpRequest(string $url, ?string $user, ?string $pass)
 	{
 		if (extension_loaded('curl')) {
 			$curl = curl_init();
@@ -246,10 +246,10 @@ class Feed
 
 	/**
 	 * Generates better accessible namespaced tags.
-	 * @param  SimpleXMLElement
-	 * @return void
+	 * @param  SimpleXMLElement $el
+     * @return void
 	 */
-	private static function adjustNamespaces($el)
+	private static function adjustNamespaces(SimpleXMLElement $el): void
 	{
 		foreach ($el->getNamespaces(true) as $prefix => $ns) {
 			if ($prefix === '') {

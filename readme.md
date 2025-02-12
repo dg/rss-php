@@ -7,7 +7,7 @@ RSS & Atom Feeds for PHP
 
 RSS & Atom Feeds for PHP is a very small and easy-to-use library for consuming an RSS and Atom feeds.
 
-It requires PHP 5.3 or newer with CURL extension or enabled allow_url_fopen
+It requires PHP 7.1 or newer with CURL extension or enabled allow_url_fopen
 and is licensed under the New BSD License. You can obtain the latest version from
 our [GitHub repository](https://github.com/dg/rss-php/releases) or install it via Composer:
 
