@@ -192,7 +192,14 @@ class Feed
 			throw new FeedException('Cannot load feed.');
 		}
 
-		return new SimpleXMLElement($data, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+		$doc = new DOMDocument();
+		$doc->loadXML($data, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+
+		if ($doc->documentElement !== NULL) {
+			return new SimpleXMLElement($doc->saveXML(), LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NOCDATA);
+		} else {
+			return new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title></title><link></link><description></description></channel></rss>', LIBXML_NOWARNING | LIBXML_NOERROR);
+		}
 	}
 
 
@@ -217,6 +224,7 @@ class Feed
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 			curl_setopt($curl, CURLOPT_ENCODING, '');
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // no echo, just return result
+			curl_setopt($curl, CURLOPT_USERAGENT, '');
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
 			}
