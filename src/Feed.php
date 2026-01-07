@@ -215,8 +215,14 @@ class Feed
 			curl_setopt($curl, CURLOPT_USERAGENT, self::$userAgent); // some feeds require a user agent
 			curl_setopt($curl, CURLOPT_HEADER, false);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+
+			if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
+				curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+			}
+
 			curl_setopt($curl, CURLOPT_ENCODING, '');
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // no echo, just return result
+			curl_setopt($curl, CURLOPT_USERAGENT, '');
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
 			}
