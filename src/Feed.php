@@ -76,7 +76,23 @@ class Feed
 
 		self::adjustNamespaces($xml);
 
-		foreach ($xml->channel->item as $item) {
+                $channel = $xml->channel;
+
+                if(isset($xml->item)) {
+                  // Some feeds have items at root, not under channel.  Add them under channel.
+                  // Basic procedure from https://stackoverflow.com/questions/5735857/php-domdocument-move-nodes-from-a-document-to-another
+                  $xml_dom = dom_import_simplexml($channel);
+                  while(count($xml->item) > 0) {
+                    // It makes no sense, but this has the side effect of popping the item as off a stack.
+                    $item = $xml->item[0];
+                    $item_dom = dom_import_simplexml($item);
+                    $item_dom_adopted = $xml_dom->ownerDocument->importNode($item_dom, true);
+                    $xml_dom->appendChild($item_dom_adopted);
+                  }
+                  $channel = simplexml_import_dom($xml_dom);
+                }
+
+		foreach ($channel->item as $item) {
 			// converts namespaces to dotted tags
 			self::adjustNamespaces($item);
 
@@ -89,7 +105,7 @@ class Feed
 			}
 		}
 		$feed = new self;
-		$feed->xml = $xml->channel;
+		$feed->xml = $channel;
 		return $feed;
 	}
 
@@ -217,6 +233,7 @@ class Feed
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 			curl_setopt($curl, CURLOPT_ENCODING, '');
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // no echo, just return result
+			curl_setopt($curl, CURLOPT_USERAGENT, '');
 			if (!ini_get('open_basedir')) {
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
 			}
