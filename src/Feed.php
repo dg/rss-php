@@ -1,24 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * RSS for PHP - small and easy-to-use library for consuming an RSS Feed
- *
- * @copyright  Copyright (c) 2008 David Grudl
- * @license    New BSD License
  */
 class Feed
 {
-	/** @var int */
-	public static $cacheExpire = '1 day';
-
-	/** @var string */
-	public static $cacheDir;
-
-	/** @var string */
-	public static $userAgent = 'FeedFetcher-Google';
-
-	/** @var SimpleXMLElement */
-	protected $xml;
+	public static string|int $cacheExpire = '1 day';
+	public static ?string $cacheDir = null;
+	public static string $userAgent = 'FeedFetcher-Google';
+	protected SimpleXMLElement $xml;
 
 
 	/**
@@ -56,7 +46,7 @@ class Feed
 	}
 
 
-	private static function fromRss(SimpleXMLElement $xml)
+	private static function fromRss(SimpleXMLElement $xml): static
 	{
 		if (!$xml->channel) {
 			throw new FeedException('Invalid feed.');
@@ -76,16 +66,16 @@ class Feed
 				$item->timestamp = strtotime($item->pubDate);
 			}
 		}
-		$feed = new self;
+		$feed = new static;
 		$feed->xml = $xml->channel;
 		return $feed;
 	}
 
 
-	private static function fromAtom(SimpleXMLElement $xml)
+	private static function fromAtom(SimpleXMLElement $xml): static
 	{
-		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), true)
-			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), true)
+		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), strict: true)
+			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), strict: true)
 		) {
 			throw new FeedException('Invalid feed.');
 		}
@@ -95,7 +85,7 @@ class Feed
 			$entry->url = (string) $entry->link['href'];
 			$entry->timestamp = strtotime($entry->updated);
 		}
-		$feed = new self;
+		$feed = new static;
 		$feed->xml = $xml;
 		return $feed;
 	}
@@ -103,10 +93,8 @@ class Feed
 
 	/**
 	 * Returns property value. Do not call directly.
-	 * @param  string  tag name
-	 * @return SimpleXMLElement
 	 */
-	public function __get($name)
+	public function __get(string $name): mixed
 	{
 		return $this->xml->{$name};
 	}
@@ -114,11 +102,8 @@ class Feed
 
 	/**
 	 * Sets value of a property. Do not call directly.
-	 * @param  string  property name
-	 * @param  mixed   property value
-	 * @return void
 	 */
-	public function __set($name, $value)
+	public function __set(string $name, mixed $value): void
 	{
 		throw new Exception("Cannot assign to a read-only property '$name'.");
 	}
@@ -126,10 +111,8 @@ class Feed
 
 	/**
 	 * Converts a SimpleXMLElement into an array.
-	 * @param  SimpleXMLElement
-	 * @return array
 	 */
-	public function toArray(SimpleXMLElement $xml = null)
+	public function toArray(?SimpleXMLElement $xml = null): string|array
 	{
 		if ($xml === null) {
 			$xml = $this->xml;
@@ -154,13 +137,9 @@ class Feed
 
 	/**
 	 * Load XML from cache or HTTP.
-	 * @param  string
-	 * @param  string
-	 * @param  string
-	 * @return SimpleXMLElement
 	 * @throws FeedException
 	 */
-	private static function loadXml($url, $user, $pass)
+	private static function loadXml(string $url, ?string $user, ?string $pass): SimpleXMLElement
 	{
 		$e = self::$cacheExpire;
 		$cacheFile = self::$cacheDir . '/feed.' . md5(serialize(func_get_args())) . '.xml';
@@ -186,13 +165,8 @@ class Feed
 
 	/**
 	 * Process HTTP request.
-	 * @param  string
-	 * @param  string
-	 * @param  string
-	 * @return string|false
-	 * @throws FeedException
 	 */
-	private static function httpRequest($url, $user, $pass)
+	private static function httpRequest(string $url, ?string $user, ?string $pass): string|false
 	{
 		if (extension_loaded('curl')) {
 			$curl = curl_init();
@@ -201,12 +175,12 @@ class Feed
 				curl_setopt($curl, CURLOPT_USERPWD, "$user:$pass");
 			}
 			curl_setopt($curl, CURLOPT_USERAGENT, self::$userAgent); // some feeds require a user agent
-			curl_setopt($curl, CURLOPT_HEADER, false);
+			curl_setopt($curl, CURLOPT_HEADER, value: false);
 			curl_setopt($curl, CURLOPT_TIMEOUT, 20);
 			curl_setopt($curl, CURLOPT_ENCODING, '');
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // no echo, just return result
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, value: true); // no echo, just return result
 			if (!ini_get('open_basedir')) {
-				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
+				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, value: true); // sometime is useful :)
 			}
 			$result = curl_exec($curl);
 			return curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200
@@ -232,10 +206,8 @@ class Feed
 
 	/**
 	 * Generates better accessible namespaced tags.
-	 * @param  SimpleXMLElement
-	 * @return void
 	 */
-	private static function adjustNamespaces($el)
+	private static function adjustNamespaces(SimpleXMLElement $el): void
 	{
 		foreach ($el->getNamespaces(true) as $prefix => $ns) {
 			if ($prefix === '') {
