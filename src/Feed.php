@@ -23,13 +23,9 @@ class Feed
 
 	/**
 	 * Loads RSS or Atom feed.
-	 * @param  string
-	 * @param  string
-	 * @param  string
-	 * @return Feed
 	 * @throws FeedException
 	 */
-	public static function load($url, $user = null, $pass = null)
+	public static function load(string $url, ?string $user = null, ?string $pass = null): static
 	{
 		$xml = self::loadXml($url, $user, $pass);
 		if ($xml->channel) {
@@ -42,13 +38,9 @@ class Feed
 
 	/**
 	 * Loads RSS feed.
-	 * @param  string  RSS feed URL
-	 * @param  string  optional user name
-	 * @param  string  optional password
-	 * @return Feed
 	 * @throws FeedException
 	 */
-	public static function loadRss($url, $user = null, $pass = null)
+	public static function loadRss(string $url, ?string $user = null, ?string $pass = null): static
 	{
 		return self::fromRss(self::loadXml($url, $user, $pass));
 	}
@@ -56,13 +48,9 @@ class Feed
 
 	/**
 	 * Loads Atom feed.
-	 * @param  string  Atom feed URL
-	 * @param  string  optional user name
-	 * @param  string  optional password
-	 * @return Feed
 	 * @throws FeedException
 	 */
-	public static function loadAtom($url, $user = null, $pass = null)
+	public static function loadAtom(string $url, ?string $user = null, ?string $pass = null): static
 	{
 		return self::fromAtom(self::loadXml($url, $user, $pass));
 	}
