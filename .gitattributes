@@ -7,3 +7,4 @@ tests/          export-ignore
 
 *.php*          diff=php
 *.sh            text eol=lf
+AGENTS.md       export-ignore
