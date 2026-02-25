@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+	<channel>
+		<title>Test DC Feed</title>
+		<link>https://example.com</link>
+		<description>A test RSS feed with Dublin Core</description>
+		<item>
+			<title>DC Article</title>
+			<link>https://example.com/dc</link>
+			<description>Short description</description>
+			<content:encoded><![CDATA[<p>Full HTML content</p>]]></content:encoded>
+			<dc:date>2024-01-15T10:30:00+00:00</dc:date>
+			<dc:creator>Test Author</dc:creator>
+		</item>
+	</channel>
+</rss>

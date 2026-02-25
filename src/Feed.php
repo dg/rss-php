@@ -61,9 +61,9 @@ class Feed
 			// generate 'url' & 'timestamp' tags
 			$item->url = (string) $item->link;
 			if (isset($item->{'dc:date'})) {
-				$item->timestamp = strtotime($item->{'dc:date'});
+				$item->timestamp = strtotime((string) $item->{'dc:date'});
 			} elseif (isset($item->pubDate)) {
-				$item->timestamp = strtotime($item->pubDate);
+				$item->timestamp = strtotime((string) $item->pubDate);
 			}
 		}
 		$feed = new static;
@@ -74,8 +74,9 @@ class Feed
 
 	private static function fromAtom(SimpleXMLElement $xml): static
 	{
-		if (!in_array('http://www.w3.org/2005/Atom', $xml->getDocNamespaces(), strict: true)
-			&& !in_array('http://purl.org/atom/ns#', $xml->getDocNamespaces(), strict: true)
+		$ns = $xml->getDocNamespaces() ?: [];
+		if (!in_array('http://www.w3.org/2005/Atom', $ns, strict: true)
+			&& !in_array('http://purl.org/atom/ns#', $ns, strict: true)
 		) {
 			throw new FeedException('Invalid feed.');
 		}
@@ -83,7 +84,7 @@ class Feed
 		// generate 'url' & 'timestamp' tags
 		foreach ($xml->entry as $entry) {
 			$entry->url = (string) $entry->link['href'];
-			$entry->timestamp = strtotime($entry->updated);
+			$entry->timestamp = strtotime((string) $entry->updated);
 		}
 		$feed = new static;
 		$feed->xml = $xml;
@@ -149,7 +150,7 @@ class Feed
 			&& $data = @file_get_contents($cacheFile)
 		) {
 			// ok
-		} elseif ($data = trim(self::httpRequest($url, $user, $pass))) {
+		} elseif (($data = self::httpRequest($url, $user, $pass)) !== false && $data = trim($data)) {
 			if (self::$cacheDir) {
 				file_put_contents($cacheFile, $data);
 			}
@@ -183,7 +184,7 @@ class Feed
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, value: true); // sometime is useful :)
 			}
 			$result = curl_exec($curl);
-			return curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200
+			return curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200 && is_string($result)
 				? $result
 				: false;
 

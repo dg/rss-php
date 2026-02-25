@@ -1,0 +1,29 @@
+parameters:
+	level: 8
+
+	paths:
+		- src
+
+	ignoreErrors:
+		# intentional: allows subclassing Feed
+		-
+			identifier: new.static
+			path: src/Feed.php
+
+		# toArray() returns recursive mixed structure
+		-
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Feed.php
+
+		# runtime-safe: $arr[$tag] is always array when count > 1
+		-
+			identifier: offsetAssign.dimType
+			count: 1
+			path: src/Feed.php
+
+		# curl_setopt expects non-empty-string, but url and userAgent are always non-empty at runtime
+		-
+			identifier: argument.type
+			count: 2
+			path: src/Feed.php
