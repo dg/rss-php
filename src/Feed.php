@@ -18,11 +18,7 @@ class Feed
 	public static function load(string $url, ?string $user = null, ?string $pass = null): static
 	{
 		$xml = self::loadXml($url, $user, $pass);
-		if ($xml->channel) {
-			return self::fromRss($xml);
-		} else {
-			return self::fromAtom($xml);
-		}
+		return $xml->channel ? self::fromRss($xml) : self::fromAtom($xml);
 	}
 
 
@@ -75,8 +71,8 @@ class Feed
 	private static function fromAtom(SimpleXMLElement $xml): static
 	{
 		$ns = $xml->getDocNamespaces() ?: [];
-		if (!in_array('http://www.w3.org/2005/Atom', $ns, strict: true)
-			&& !in_array('http://purl.org/atom/ns#', $ns, strict: true)
+		if (!in_array('http://www.w3.org/2005/Atom', $ns, true)
+			&& !in_array('http://purl.org/atom/ns#', $ns, true)
 		) {
 			throw new FeedException('Invalid feed.');
 		}
@@ -221,7 +217,6 @@ class Feed
 		}
 	}
 }
-
 
 
 /**
